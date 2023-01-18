@@ -1,0 +1,14 @@
+{
+  "name": "zipsplit",
+  "version-string": "0.1.0",
+  "description": "Convert zip archive into one zip per file",
+  "dependencies": [
+    "boost-program-options",
+    "tbb",
+    "poco",
+    "indicators",
+    "fmt",
+    "libarchive"
+  ]
+
+}
