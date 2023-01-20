@@ -1,0 +1,14 @@
+﻿*.*~
+*.o
+*.so
+*.swp
+*.cmake
+Makefile
+CMakeCache.txt
+*.sln
+*.vcxproj
+cmaked/
+_build/
+release/
+*.user
+tags
