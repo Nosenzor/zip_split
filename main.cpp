@@ -1,11 +1,8 @@
 
 // ==========================================================================
-// Copyright Romain NOSENZO(c) 2022. All Rights Reserved
+// Copyright Romain NOSENZO(c) 2023. All Rights Reserved
 // ==========================================================================
 //
-
-//#include "boost/algorithm/string.hpp"
-
 
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_for_each.h>
@@ -14,15 +11,10 @@
 #include "Poco/Zip/Compress.h"
 #include "Poco/Zip/Decompress.h"
 #include "Poco/Zip/ZipArchive.h"
-#include "Poco/Zip/ZipLocalFileHeader.h"
 
 
 #include <archive_reader.hpp>
 
-#include <indicators/cursor_control.hpp>
-#include <indicators/multi_progress.hpp>
-#include <indicators/progress_bar.hpp>
-#include <indicators/termcolor.hpp>
 
 #include <fmt/format.h>
 #include <fmt/core.h>
@@ -36,11 +28,10 @@
 #include <atomic>
 #include <iostream>
 #include <algorithm>
-#include <cstdlib>
+
 
 
 namespace po = boost::program_options;
-namespace pb = indicators;
 namespace fs = std::filesystem;
 
 
@@ -195,9 +186,9 @@ int main(int argc, const char** argv)
 
     auto fUnZipAndReZip=[&NbInZipFilesDone, &NbOutZipFilesDone,&OutputDir,NbFiles]
             (const auto & filename) {
-        fmt::print("Processing file {} : {}/{}\n",filename,NbOutZipFilesDone,NbFiles);
-        ++NbInZipFilesDone;
 
+        ++NbInZipFilesDone;
+        fmt::print("Processing file {} : {}/{}\n",filename,NbInZipFilesDone,NbFiles);
         std::string TmpDirName = fmt::format("Temp{}", NbInZipFilesDone.load());
         fs::create_directories(OutputDir / TmpDirName);
         auto AllFilesInArchive = UnzipFile(filename, OutputDir / TmpDirName);
@@ -207,12 +198,13 @@ int main(int argc, const char** argv)
                                [&NbOutZipFilesDone, &OutputDir]
                                        (const auto &file_to_zip) {
                                    if (fs::is_regular_file(file_to_zip)) {
-                                       ++NbOutZipFilesDone;
+
                                        std::string SubDirName = fmt::format("S{}k",
                                                                             NbOutZipFilesDone.load() / SubdirSize);
                                        fs::create_directories(OutputDir / SubDirName);
                                        fs::path ZipFilePath = OutputDir / SubDirName /
                                                               (file_to_zip.stem().string() + ".zip");
+                                       ++NbOutZipFilesDone;
                                        ZipFile(file_to_zip, ZipFilePath);
                                    }
                                });
